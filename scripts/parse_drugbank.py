@@ -1,4 +1,3 @@
-
 import xml.etree.ElementTree as ET
 import pandas as pd
 import os
@@ -6,9 +5,8 @@ import os
 # -----------------------------
 # 1. Set file paths
 # -----------------------------
-XML_PATH = "../data/drugbank.xml"   # path to your XML
-OUTPUT_PREFIX = "../output/drug_interactions_chunk"
-CHUNK_SIZE = 1000000                # Excel-friendly row limit
+XML_PATH = "../data/drugbank.xml"      # path to your XML
+OUTPUT_FILE = "../output/drug_interactions.csv"
 
 # -----------------------------
 # 2. Parse XML
@@ -17,7 +15,6 @@ print("Loading XML file...")
 tree = ET.parse(XML_PATH)
 root = tree.getroot()
 
-# DrugBank uses XML namespace
 namespace = {'db': 'http://www.drugbank.ca'}
 
 # -----------------------------
@@ -65,14 +62,9 @@ print(f"Total interactions extracted: {len(interactions)}")
 df = pd.DataFrame(interactions)
 
 # -----------------------------
-# 5. Save as CSV chunks
+# 5. Save ONE CSV file
 # -----------------------------
 os.makedirs("../output", exist_ok=True)
+df.to_csv(OUTPUT_FILE, index=False)
 
-for i, start in enumerate(range(0, len(df), CHUNK_SIZE)):
-    df_chunk = df.iloc[start:start+CHUNK_SIZE]
-    filename = f"{OUTPUT_PREFIX}_{i+1}.csv"
-    df_chunk.to_csv(filename, index=False)
-    print(f"Saved {filename} with {len(df_chunk)} rows")
-
-print("All CSV chunks created successfully!")
+print(f"CSV saved successfully as {OUTPUT_FILE}")
